@@ -40,6 +40,9 @@ CPPSRC += $(TARGET_SRC_PATH)/usb_endp.cpp
 CPPSRC += $(TARGET_SRC_PATH)/usb_istr.cpp
 CPPSRC += $(TARGET_SRC_PATH)/usb_prop.cpp
 CPPSRC += $(TARGET_SRC_PATH)/wifi_credentials_reader.cpp
+CPPSRC += $(TARGET_SRC_PATH)/Adafruit_GFX.cpp
+CPPSRC += $(TARGET_SRC_PATH)/Adafruit_SSD1306.cpp
+CPPSRC += $(TARGET_SRC_PATH)/font.c
 
 # ASM source files included in this build.
 ASRC +=
