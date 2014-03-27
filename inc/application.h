@@ -42,7 +42,5 @@
 #include "spark_wiring_tcpclient.h"
 #include "spark_wiring_tcpserver.h"
 #include "spark_wiring_udp.h"
-#include "Adafruit_SSD1306.h"
-#include "Adafruit_GFX.h"
 
 #endif /* APPLICATION_H_ */

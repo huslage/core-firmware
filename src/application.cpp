@@ -1,5 +1,7 @@
 // This #include statement was automatically added by the Spark IDE.
 #include "application.h"
+//#include "Adafruit_GFX.h"
+#include "Adafruit_SSD1306.h"
 
 int surf(String args);
 void urlDecode(String &input);
