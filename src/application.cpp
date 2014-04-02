@@ -5,6 +5,8 @@
 
 int surf(String args);
 void urlDecode(String &input);
+int id;
+char s_id[4] = "0";
 
 /* ============== MAIN =====================*/
 
@@ -14,7 +16,7 @@ void urlDecode(String &input);
 
 
  unsigned long previousMillis;
- unsigned long interval = 30000;
+ unsigned long interval = 300000;
 
  void setup() {
   // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
@@ -37,7 +39,8 @@ void loop() {
   
   if(currentMillis - previousMillis > interval) {
     previousMillis = currentMillis;
-    Spark.publish("refresh","2456");
+    sprintf(s_id,"%d",id);
+    Spark.publish("refresh",s_id);
     Serial.println("Refreshing...");
   }
 }
@@ -51,12 +54,13 @@ int surf(String args) {
   urlDecode(args);
 
   int idx = args.indexOf("/");
-  String myid = args.substring(0,idx-1);
+  String myid = args.substring(0,idx);
+  String mydata = args.substring(idx+1);
 
   char idbuf[5];
   myid.toCharArray(idbuf, sizeof(idbuf));
-  int id = atoi(idbuf);
-
+  id = atoi(idbuf);
+  Serial.println(id);
   String name;
   switch (id) {
     case 2456: 
@@ -79,9 +83,9 @@ int surf(String args) {
   oled.clearDisplay();
   oled.setCursor(0,0);
   
-  args.replace('/','\n');
+  mydata.replace('/','\n');
   oled.println(name);
-  oled.println(args);
+  oled.println(mydata);
 
   oled.display();
   return 1;
