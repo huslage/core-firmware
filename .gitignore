@@ -44,3 +44,7 @@ libraries/Arduino/
 
 # TropicSSL libraries
 libraries/Tropicssl/
+
+build/core-firmware.bin
+build/core-firmware.elf
+build/core-firmware.hex
