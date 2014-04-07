@@ -1,16 +1,13 @@
 // This #include statement was automatically added by the Spark IDE.
 #include "application.h"
 //#include "Adafruit_GFX.h"
-#include "Adafruit_SSD1306.h"
+#include "LiquidCrystal.h"
 
 /* ============== MAIN =====================*/
 
-//Use I2C with OLED RESET pin on D4
-#define OLED_RESET D4
-Adafruit_SSD1306 oled(OLED_RESET);
-
+LiquidCrystal *lcd;
 unsigned long previousMillis;
-unsigned long interval = 30000;
+unsigned long interval = 1800000;
 
 int surf(String args);
 void urlDecode(String &input);
@@ -18,13 +15,13 @@ int id;
 char s_id[5] = "0";
 
 void setup() {
-  oled.begin(SSD1306_SWITCHCAPVCC, 0x3D);  
-  oled.clearDisplay();
-  oled.setTextSize(1);
-  oled.setTextColor(WHITE);
-  oled.setCursor(0,0);
-  oled.println("Up next,\nsurf report!");
-  oled.display(); // show splashscreen
+  lcd = new LiquidCrystal(D0, D1, D2, D3, D4, D5);
+  // set up the LCD's number of columns and rows:
+  lcd->begin(20, 4);
+  // Print a message to the LCD.
+  lcd->clear();
+  lcd->print("Up Next,Surf Report!");
+
   Spark.function("surf",surf);
 }
 
@@ -40,11 +37,16 @@ void loop() {
 
 int surf(String args) {
   urlDecode(args);
+  char c;
+  char d = '/';
+  int i;
+  int current_line = 1;
+  int current_col = 0;
+  lcd->clear();
 
   int idx = args.indexOf("/");
   String myid = args.substring(0,idx);
   String mydata = args.substring(idx+1);
-
   char idbuf[5];
   myid.toCharArray(idbuf, sizeof(idbuf));
   id = atoi(idbuf);
@@ -67,15 +69,22 @@ int surf(String args) {
     name = "Carolina Beach";
     break;
   }
+  
+  lcd->setCursor(0,0);
+  lcd->print(name);
 
-  oled.clearDisplay();
-  oled.setCursor(0,0);
+  for( i = 0; i < mydata.length(); i++ ) {
+      c = mydata.charAt(i);
+        if( c == d ) {
+          current_line++;
+          current_col = 0;
+      } else {
+          lcd->setCursor(current_col,current_line);
+          lcd->print(c);
+          current_col++;
+      }
+  }
 
-  mydata.replace('/','\n');
-  oled.println(name);
-  oled.println(mydata);
-
-  oled.display();
   return 1;
 }
 
