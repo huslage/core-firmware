@@ -1,2 +1,5 @@
 # Compiled objects and dependancies
 obj/
+build/*.elf
+build/*.hex
+build/*.bin

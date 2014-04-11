@@ -294,24 +294,10 @@ void WLAN_Async_Callback(long lEventType, char *data, unsigned char length)
 			break;
 
 		case HCI_EVNT_WLAN_UNSOL_DISCONNECT:
-			if(WLAN_CONNECTED)
-			{
-				//What if AP is Off or Out Of Range, do we still need to ARM_WLAN_WD?
-				//ARM_WLAN_WD(DISCONNECT_TO_RECONNECT);
-				CLR_WLAN_WD();
+			if (WLAN_CONNECTED) {
+				ARM_WLAN_WD(DISCONNECT_TO_RECONNECT);
 				LED_SetRGBColor(RGB_COLOR_GREEN);
 				LED_On(LED_RGB);
-			}
-			else
-			{
-				if(NVMEM_Spark_File_Data[WLAN_PROFILE_FILE_OFFSET] != 0)
-				{
-					NVMEM_Spark_File_Data[WLAN_PROFILE_FILE_OFFSET] -= 1;
-				}
-				else
-				{
-					WLAN_SMART_CONFIG_START = 1;
-				}
 			}
 			WLAN_CONNECTED = 0;
 			WLAN_DHCP = 0;
@@ -460,9 +446,9 @@ void SPARK_WLAN_Setup(void (*presence_announcement_callback)(void))
 void SPARK_WLAN_Loop(void)
 {
   static int cfod_count = 0;
+  KICK_WDT();
 
   ON_EVENT_DELTA();
-
   spark_loop_total_millis = 0;
 
   if (SPARK_WLAN_RESET || SPARK_WLAN_SLEEP || WLAN_WD_TO())
@@ -545,6 +531,19 @@ void SPARK_WLAN_Loop(void)
     WLAN_SMART_CONFIG_STOP = 0;
   }
 
+  if (WLAN_DHCP && !SPARK_WLAN_SLEEP)
+  {
+	if (ip_config.aucIP[3] == 0)
+	{
+	  Delay(100);
+      netapp_ipconfig(&ip_config);
+	}
+  }
+  else if (ip_config.aucIP[3] != 0)
+  {
+    memset(&ip_config, 0, sizeof(tNetappIpconfigRetArgs));
+  }
+
   if (SPARK_CLOUD_CONNECT == 0)
   {
     if (SPARK_CLOUD_SOCKETED || SPARK_CLOUD_CONNECTED)
@@ -564,10 +563,6 @@ void SPARK_WLAN_Loop(void)
 
   if (WLAN_DHCP && !SPARK_WLAN_SLEEP && !SPARK_CLOUD_SOCKETED)
   {
-    Delay(100);
-
-    netapp_ipconfig(&ip_config);
-
     if (Spark_Error_Count)
     {
       LED_SetRGBColor(RGB_COLOR_RED);

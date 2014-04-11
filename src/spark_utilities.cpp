@@ -200,6 +200,26 @@ void SparkClass::publish(const char *eventName, const char *eventData, int ttl, 
   spark_protocol.send_event(eventName, eventData, ttl, (eventType ? EventType::PRIVATE : EventType::PUBLIC));
 }
 
+void SparkClass::publish(String eventName)
+{
+  publish(eventName.c_str());
+}
+
+void SparkClass::publish(String eventName, String eventData)
+{
+  publish(eventName.c_str(), eventData.c_str());
+}
+
+void SparkClass::publish(String eventName, String eventData, int ttl)
+{
+  publish(eventName.c_str(), eventData.c_str(), ttl);
+}
+
+void SparkClass::publish(String eventName, String eventData, int ttl, Spark_Event_TypeDef eventType)
+{
+  publish(eventName.c_str(), eventData.c_str(), ttl, eventType);
+}
+
 void SparkClass::sleep(Spark_Sleep_TypeDef sleepMode, long seconds)
 {
 #if defined (SPARK_RTC_ENABLE)
@@ -543,6 +563,11 @@ void Spark_Signal(bool on)
     LED_Signaling_Stop();
     LED_Spark_Signal = 0;
   }
+}
+
+void Spark_SetTime(unsigned long dateTime)
+{
+	Time.setTime(dateTime);
 }
 
 int Internet_Test(void)
